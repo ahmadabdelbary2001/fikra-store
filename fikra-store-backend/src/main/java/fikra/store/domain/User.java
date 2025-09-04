@@ -16,20 +16,28 @@ import lombok.Setter;
 public class User {
     private Long id;
     private String username;
-    private String password; // domain may hold password, but encoding/hashing belongs to the outer layer
-    private String role;
+    private String password;
+    private Role role;
 
     public User() {}
 
-    public User(Long id, String username, String password, String role) {
+    public User(Long id, String username, String password, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-    public User(String username, String password, String role) {
+    public User(String username, String password, Role role) {
         this(null, username, password, role);
+    }
+
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
+
+    public boolean isCustomer() {
+        return role == Role.CUSTOMER;
     }
 
     @Override
@@ -38,10 +46,10 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
 
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
-               Objects.equals(username, user.username) &&
-               Objects.equals(password, user.password) &&
-               Objects.equals(role, user.role);
+        return Objects.equals(id, user.id)
+                && Objects.equals(username, user.username)
+                && Objects.equals(password, user.password)
+                && role == user.role;
     }
 
     @Override
@@ -55,7 +63,7 @@ public class User {
                "id=" + id +
                ", username='" + username + '\'' +
                ", password='[PROTECTED]'" +
-               ", role='" + role + '\'' +
+               ", role=" + role +
                '}';
     }
 }
