@@ -47,14 +47,12 @@ public class User {
 
         User user = (User) o;
         return Objects.equals(id, user.id)
-                && Objects.equals(username, user.username)
-                && Objects.equals(password, user.password)
-                && role == user.role;
+                && Objects.equals(username, user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, role);
+        return Objects.hash(id, username);
     }
 
     @Override
