@@ -2,7 +2,11 @@ package fikra.store.adapters.persistence.jpa.entities;
 
 import jakarta.persistence.*;
 import fikra.store.domain.Role;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class UserEntity {
