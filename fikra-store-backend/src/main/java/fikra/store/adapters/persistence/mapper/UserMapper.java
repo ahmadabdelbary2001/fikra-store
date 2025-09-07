@@ -1,35 +1,40 @@
 package fikra.store.adapters.persistence.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-import org.mapstruct.AfterMapping;
-
-import fikra.store.domain.User;
+import org.springframework.stereotype.Component;
 import fikra.store.adapters.persistence.jpa.entities.UserEntity;
+import fikra.store.domain.User;
 import fikra.store.domain.Admin;
 import fikra.store.domain.Customer;
 import fikra.store.domain.Role;
 
-@Mapper(componentModel = "spring")
-public abstract class UserMapper {
+@Component
+public class UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    public abstract UserEntity toEntity(User domain);
+    public User toDomain(UserEntity e) {
+        if (e == null) return null;
 
-    public abstract User toDomain(UserEntity entity);
+        Role role = e.getRole() == null ? Role.CUSTOMER : e.getRole();
 
-    @AfterMapping
-    protected void afterToDomain(UserEntity entity, @MappingTarget User target) {
+        if (role == Role.ADMIN) {
+            // create Admin domain object
+            Admin a = new Admin(e.getId(), e.getUsername(), e.getPassword());
+            return a;
+        } else {
+            // default to Customer
+            Customer c = new Customer(e.getId(), e.getUsername(), e.getPassword());
+            return c;
+        }
     }
 
-    public User toDomainWithSubtype(UserEntity entity) {
-        if (entity == null) return null;
-        Role role = entity.getRole() == null ? Role.CUSTOMER : entity.getRole();
-        if (role == Role.ADMIN) {
-            return new Admin(entity.getId(), entity.getUsername(), entity.getPassword());
-        } else {
-            return new Customer(entity.getId(), entity.getUsername(), entity.getPassword());
-        }
+    public UserEntity toEntity(User d) {
+        if (d == null) return null;
+        UserEntity e = new UserEntity();
+        if (d.getId() != null) e.setId(d.getId());
+        e.setUsername(d.getUsername());
+        e.setPassword(d.getPassword());
+        e.setRole(d.getRole() == null ? Role.CUSTOMER : d.getRole());
+        return e;
     }
 }
