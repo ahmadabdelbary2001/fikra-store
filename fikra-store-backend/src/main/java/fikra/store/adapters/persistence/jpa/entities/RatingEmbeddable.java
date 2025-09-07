@@ -1,4 +1,4 @@
-package fikra.store.infrastructure.persistence.entities;
+package fikra.store.adapters.persistence.jpa.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
