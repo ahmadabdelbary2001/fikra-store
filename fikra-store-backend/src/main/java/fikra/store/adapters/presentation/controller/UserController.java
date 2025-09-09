@@ -2,8 +2,6 @@ package fikra.store.adapters.presentation.controller;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
@@ -18,6 +16,8 @@ import fikra.store.application.features.user.commands.RegisterAdminCommand;
 import fikra.store.application.features.user.queries.GetUserByUsernameQuery;
 import fikra.store.application.features.user.queries.FindUsersByRoleQuery;
 import fikra.store.adapters.presentation.dto.UserRegistrationDto;
+import fikra.store.adapters.presentation.dto.UserDto;
+import fikra.store.adapters.presentation.dto.UserSummaryDto;
 import fikra.store.domain.Role;
 import fikra.store.domain.User;
 
@@ -65,25 +65,23 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(Principal principal) {
+    public ResponseEntity<UserDto> me(Principal principal) {
         if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         User u = getByUsername.execute(principal.getName());
-        return ResponseEntity.ok(Map.of("id", u.getId(), "username", u.getUsername(), "role", u.getRole().name()));
+        UserDto dto = new UserDto(u.getId(), u.getUsername(), u.getRole() == null ? null : u.getRole().name());
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<Map<String,Object>>> getUsersByRole(@PathVariable String role) {
+    public ResponseEntity<List<UserSummaryDto>> getUsersByRole(@PathVariable String role) {
         Role r = Role.valueOf(role.toUpperCase());
         List<User> users = findByRole.execute(r);
 
-        List<Map<String,Object>> payload = users.stream().map(u -> {
-            Map<String,Object> m = new HashMap<>();
-            m.put("id", u.getId());
-            m.put("username", u.getUsername());
-            return m;
-        }).collect(Collectors.toList());
+        List<UserSummaryDto> payload = users.stream()
+                .map(u -> new UserSummaryDto(u.getId(), u.getUsername()))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(payload);
     }
