@@ -28,6 +28,8 @@ public class UserMapper {
         }
     }
 
+    // public List<User> toDomainList(List<UserEntity> entities);
+
     public UserEntity toEntity(User d) {
         if (d == null) return null;
         UserEntity e = new UserEntity();

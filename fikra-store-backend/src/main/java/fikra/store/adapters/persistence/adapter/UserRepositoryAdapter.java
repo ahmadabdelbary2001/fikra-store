@@ -52,6 +52,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public List<User> findByRole(Role role) {
+        // return mapper.toDomainList(jpa.findByRole(role));
         return jpa.findByRole(role).stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 }
